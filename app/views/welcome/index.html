@@ -1,0 +1,80 @@
+<h1>Single_Page!</h1>
+<br>
+<body>
+Every button on this page directs you to the summary of
+every page in this web application
+</body>
+<br><br>
+<html>
+<head>
+    <title>A very simple SPA in Vue and Axios</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+
+<div id="Itemlist">
+    <button v-on:click="courses_selected=true, sections_selected=false, students_selected=false">Courses</button>
+    <button v-on:click="sections_selected=true, students_selected=false, courses_selected=false">Sections</button>
+    <button v-on:click="students_selected=true, sections_selected=false, courses_selected=false">Students</button>
+    <ul>
+
+    <span v-if="sections_selected">
+        <div v-for="section in sections">
+            <li>{{section.class_location}}, Section {{section.section_number}}</li>
+                <div v-for="course in courses">
+                    <span v-if="section.course_id === course.id">
+                        Class: {{course.name}}
+                    </span>
+                </div>
+        </div>
+    </span>
+
+        <span v-else-if="courses_selected">
+        <div v-for="course in courses">
+            <li>{{course.course_name}}</li>
+            <div v-for="section in sections">
+                <span v-if="section.course_id === course.id">
+                    {{section.semester}}, Section {{section.number}}
+                </span>
+            </div>
+        </div>
+    </span>
+
+        <span v-else-if="students_selected">
+        <div v-for="student in students">
+            <li>{{student.first_name}} {{student.last_name}}, {{student.credits}}, {{student.student_class}}</li>
+                <div v-for="section in sections">
+                    {{section.number}}
+                </div>
+        </div>
+    </span>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    var ItemsVue = new Vue({
+        el: '#Itemlist',
+        data: { courses: [],
+            students_selected: false,
+            sections_selected: false,
+            courses_selected: false,
+            sections: [],
+            students: []
+        },
+        mounted: function() {
+            axios.get('http://localhost:3000/sections.json')
+                .then(response => { this.sections = response.data })
+        .catch(error => { console.log(error); });
+            axios.get('http://localhost:3000/courses.json')
+                .then(response => { this.courses = response.data })
+        .catch(error => { console.log(error); });
+            axios.get('http://localhost:3000/students.json')
+                .then(response => { this.students = response.data })
+        .catch(error => { console.log(error); });
+        }
+    });
+</script>
+
+</body>
+</html>
